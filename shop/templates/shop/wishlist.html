@@ -1,0 +1,16 @@
+{% block content %}
+    <h2>قائمة المفضلة</h2>
+    
+    {% if wishlist_items %}
+        <ul>
+            {% for item in wishlist_items %}
+                <li>
+                    <a href="{% url 'product_detail' item.product.id %}">{{ item.product.name }}</a>
+                    <a href="{% url 'remove_from_wishlist' item.product.id %}" class="btn btn-danger">إزالة</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>لم تقم بإضافة أي منتجات إلى المفضلة بعد.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأقسام</title>
+    <style>
+        /* تنسيق أساسي */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* الشعار */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ff9f00;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-container .icon {
+            font-size: 50px;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .logo-container .text {
+            font-size: 30px;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* الشريط العلوي */
+        nav {
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: #ff9f00;
+        }
+
+        /* أيقونة المفضلة */
+        .wishlist-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .wishlist-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+        }
+
+        /* المنتجات */
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .product-item {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 220px;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* زر الإضافة إلى المفضلة */
+        .wishlist-btn {
+            background-color: #ff9f00;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .wishlist-btn:hover {
+            background-color: #cc7a00;
+        }
+
+        /* تحسين التجاوب */
+        @media screen and (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            .product-list {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الشعار -->
+    <div class="logo-container">
+        <div class="icon">🛒</div>
+        <div class="text">متجرنا</div>
+    </div>
+
+    <!-- شريط التنقل -->
+    <nav>
+        <ul>
+            <li><a href="{% url 'category_list' %}">🏠 الصفحة الرئيسية</a></li>
+            <li><a href="{% url 'supervisor_dashboard' %}">📊 لوحة المشرف</a></li>
+        </ul>
+
+        <!-- أيقونة المفضلة -->
+        <div class="wishlist-icon">
+            ❤️
+            <span class="wishlist-count">{{ wishlist_items.count }}</span>
+        </div>
+    </nav>
+
+    <!-- عرض المنتجات المخفضة -->
+    <h2 style="text-align: center;">🔥 منتجات مخفضة</h2>
+    <div class="product-list">
+        {% for product in discounted_products %}
+            <div class="product-item">
+                <a href="{% url 'product_detail' product.id %}">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p><del><span class="price">{{ product.price }}$</del> <strong><span class="price">{{ product.discounted_price }}$</strong></p>
+                </a>
+                <button class="wishlist-btn" onclick="addToWishlist({{ product.id }})">إضافة إلى المفضلة ❤️</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- عرض الأقسام -->
+    <h1 style="text-align: center;">📂 الأقسام</h1>
+    <div class="product-list">
+        {% for category in categories %}
+            <div class="product-item">
+                <a href="{% url 'product_list' category.id %}">
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                    <h3>{{ category.name }}</h3>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // دالة لإضافة المنتجات إلى المفضلة
+        function addToWishlist(productId) {
+            fetch(`/wishlist/add/${productId}/`, {
+                method: "GET"
+            }).then(response => {
+                if (response.ok) {
+                    alert("✅ تمت إضافة المنتج إلى المفضلة!");
+                    location.reload();  // تحديث الصفحة بعد الإضافة
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
+<script>
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " دينار عراقي";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let priceElements = document.querySelectorAll(".price");
+        priceElements.forEach(element => {
+            let value = parseFloat(element.innerText);
+            element.innerText = formatNumber(value);
+        });
+    });
+</script>

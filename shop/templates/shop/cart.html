@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>عربة التسوق</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 2.5em;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 30px auto;
+            max-width: 800px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        li {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li a {
+            color: #ff0000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        li a:hover {
+            text-decoration: underline;
+        }
+
+        input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            display: block;
+            width: 220px;
+            margin: 20px auto;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .footer-links a:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>عربة التسوق</h2>
+    <form method="post">
+        {% csrf_token %}
+        <ul>
+            {% for item in cart_items %}
+                <li>
+                    <div>
+                        <span>{{ item.product.name }} - </span>
+                        <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1">
+                        × <span class="price">{{ item.product.discounted_price }} د.إ</span>
+                        = <span class="price">{{ item.total_price }} د.إ</span>
+                    </div>
+                    <a href="{% url 'remove_from_cart' item.id %}">حذف</a>
+                    </li>
+                    {% empty %}
+                    <li style="text-align: center; padding: 15px; color: #888;">لا توجد عناصر في عربة التسوق.</li>
+                    {% endfor %}
+                    </ul>
+                    
+                    <p class="total">المجموع: <span class="price">{{ total }} د.إ</span></p>
+                    <button type="submit">تحديث الكميات</button>
+                    </form>
+                    
+                    <div class="links">
+                        <a href="{% url 'category_list' %}">استمرار التسوق</a>
+                        <a href="{% url 'checkout' %}">إتمام الشراء</a>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="{% url 'category_list' %}">عودة إلى الصفحة الرئيسية</a>
+                    </div>
+                    
+                    <script>
+                        function formatNumber(num) {
+                            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " دينار عراقي";
+                        }
+                    
+                        document.addEventListener("DOMContentLoaded", function () {
+                            let priceElements = document.querySelectorAll(".price");
+                            priceElements.forEach(element => {
+                                let value = element.innerText.replace(/[^\d.]/g, ''); // إزالة أي نص غير رقمي
+                                value = parseFloat(value); // تحويل النص إلى رقم
+                                if (!isNaN(value)) {
+                                    element.innerText = formatNumber(value);
+                                }
+                            });
+                        });
+                    </script>

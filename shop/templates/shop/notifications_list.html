@@ -1,0 +1,50 @@
+<!-- shop/templates/shop/notifications_list.html -->
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الإشعارات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            direction: rtl;
+        }
+        h1 {
+            text-align: center;
+        }
+        .notification-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .notification {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .read {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>قائمة الإشعارات</h1>
+
+    <div class="notification-list">
+        {% for notification in notifications %}
+            <div class="notification {% if notification.is_read %}read{% endif %}">
+                <p>{{ notification.message }}</p>
+                {% if not notification.is_read %}
+                    <a href="{% url 'mark_notification_as_read' notification.id %}" class="button">تمت القراءة</a>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>لا توجد إشعارات حالياً.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

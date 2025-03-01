@@ -1,0 +1,21 @@
+<h3>تفاصيل الطلب رقم {{ order.id }}</h3>
+<table>
+    <thead>
+        <tr>
+            <th>المنتج</th>
+            <th>الكمية</th>
+            <th>السعر الإجمالي</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.total_price }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p><strong>المبلغ الكلي:</strong> {{ order.total_amount }}</p>
+<p><strong>الحالة الحالية:</strong> {{ order.get_status_display }}</p>

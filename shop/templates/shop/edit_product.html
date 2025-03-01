@@ -1,0 +1,19 @@
+<!-- edit_product.html -->
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل المنتج</title>
+</head>
+<body>
+    <h1>تعديل المنتج: {{ product.name }}</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">تعديل المنتج</button>
+    </form>
+    <br>
+    <a href="{% url 'product_management' %}">عودة إلى قائمة المنتجات</a>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم موصل الطلبات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-container p {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .status-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .status-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>لوحة تحكم موصل الطلبات</h1>
+
+    <p>مرحباً، {{ delivery_person.name }}!</p>
+
+    {% if order %}
+    <h2>تفاصيل الطلب:</h2>
+    <p><strong>رقم الطلب:</strong> {{ order.id }}</p>
+    <p><strong>المنتجات:</strong> 
+        {% for item in order.items.all %}
+            {{ item.product.name }} ({{ item.quantity }} x {{ item.price }})
+        {% endfor %}
+    </p>
+    <p><strong>العنوان:</strong> {{ order.address }}</p>
+    <p><strong>رقم الهاتف:</strong> {{ order.phone_number }}</p>
+    <p><strong>السعر:</strong> {{ order.total_amount }}</p>
+    <p><strong>تاريخ الطلب:</strong> {{ order.created_at }}</p>
+{% else %}
+    <p>لا يوجد طلب مرتبط بك حالياً.</p>
+{% endif %}
+
+    <form method="POST" action="{% url 'change_status' %}">
+        {% csrf_token %}
+        <label for="status">تغيير الحالة:</label>
+        <select name="status">
+            <option value="available" {% if delivery_person.status == 'available' %}selected{% endif %}>متاح</option>
+            <option value="busy" {% if delivery_person.status == 'busy' %}selected{% endif %}>مشغول</option>
+        </select>
+        <button type="submit">تحديث الحالة</button>
+    </form>
+   
+    <form method="POST" action="{% url 'update_order_status' order_id=order.id %}">
+        {% csrf_token %}
+        <div>
+            <label for="order_status">اختار حالة الطلب:</label>
+            <select name="order_status" id="order_status" required>
+                <option value="تم استلام الطلب">تم استلام الطلب</option>
+                <option value="تم تجهيز الطلب">تم تجهيز الطلب</option>
+                <option value="في الطريق">في الطريق</option>
+            </select>
+        </div>
+    
+        <div>
+            <button type="submit">تحديث الحالة</button>
+        </div>
+    </form>
+    </div>
+</body>
+
+</html>
+</body>
+</html>

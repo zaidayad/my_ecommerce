@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المشرف</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-size: 1.5em;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table td input {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 7px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .status-column {
+            width: 150px;
+        }
+
+        .order-column {
+            width: 180px;
+        }
+
+        .action-link {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .action-link:hover {
+            background-color: #45a049;
+        }
+
+        .form-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .status-select {
+            display: inline-block;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .delivery-person-status {
+            margin-top: 30px;
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border-radius: 5px;
+        }
+
+        .delivery-person-status h3 {
+            margin-top: 0;
+        }
+
+        .delivery-person-status p {
+            margin: 10px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>لوحة تحكم المشرف</h1>
+    </header>
+    <div class="container">
+        {% if delivery_persons %}
+            <h2>قائمة الموزعين</h2>
+            <form method="POST" action="{% url 'update_delivery_person_order' %}">
+                {% csrf_token %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>رقم الهاتف</th>
+                            <th>العمر</th>
+                            <th class="status-column">الحالة</th>
+                            <th class="order-column">رقم الطلب</th>
+                            <th>تحديث</th>
+                            <th>حالة طلب</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for delivery_person in delivery_persons %}
+                            <tr>
+                                <td>{{ delivery_person.name }}</td>
+                                <td>{{ delivery_person.phone_number }}</td>
+                                <td>{{ delivery_person.age }}</td>
+                                <td>{{ delivery_person.get_status_display }}</td>
+                               
+                                <td>
+                                    <input type="number" name="order_id_{{ delivery_person.id }}" value="{{ delivery_person.order_id|default:'' }}" placeholder="رقم الطلب">
+                                </td>
+                                <td>
+                                    <button type="submit" name="delivery_person_id" value="{{ delivery_person.id }}">تحديث</button>
+                                </td>
+                                <td>{{ delivery_person.order.status }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+
+           
+
+        {% else %}
+            <p class="empty-message">لا يوجد موصّلين حالياً.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>

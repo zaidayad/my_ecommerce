@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>المنتجات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+        }
+        form {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input[type="text"], select {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(100% - 22px);
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+            transition: box-shadow 0.3s ease;
+        }
+        li:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .no-products {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>المنتجات</h1>
+
+    <form method="GET">
+        <input type="hidden" name="category_id" value="{{ category_id }}">
+        <input type="text" name="q" value="{{ query }}" placeholder="ابحث عن المنتجات...">
+        <button type="submit">بحث</button>
+        
+        <h3>تصفية المنتجات</h3>
+        <label>السعر:</label>
+        <select name="price_filter">
+            <option value="">اختر نطاق السعر</option>
+            <option value="low" {% if price_filter == 'low' %}selected{% endif %}>أقل من 100 د.إ</option>
+            <option value="medium" {% if price_filter == 'medium' %}selected{% endif %}>100 د.إ - 500 د.إ</option>
+            <option value="high" {% if price_filter == 'high' %}selected{% endif %}>أكثر من 500 د.إ</option>
+        </select>
+        
+        <button type="submit">تصفية</button>
+    </form>
+    
+    <ul>
+        {% for product in products %}
+            <li>
+                <h2>
+                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: #007BFF;">
+                        {{ product.name }}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    </a>
+                </h2>
+                <p>
+                    {% if product.discount_percentage %}
+                        <span style="text-decoration: line-through; color: #888;"><span class="price">{{ product.price }} د.إ</span>
+                        <strong style="color: #28a745;">{{ product.discounted_price|floatformat:2 }} د.إ</strong>
+                        <span style="color: #dc3545;">(خصم {{ product.discount_percentage }}%)</span>
+                    {% else %}
+                        <strong style="color: #28a745;"><span class="price">{{ product.price }} د.إ</strong>
+                    {% endif %}
+                </p>
+                <h3>إضافة إلى عربة التسوق</h3>
+                <a href="{% url 'add_to_cart' product.id %}" style="background-color: #28a745; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px;">أضف إلى عربة التسوق</a>
+            </li>
+        {% empty %}
+            <li class="no-products">لا توجد منتجات في هذا القسم.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+<script>
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " دينار عراقي";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let priceElements = document.querySelectorAll(".price");
+        priceElements.forEach(element => {
+            let value = parseFloat(element.innerText);
+            element.innerText = formatNumber(value);
+        });
+    });
+</script>

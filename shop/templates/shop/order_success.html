@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>نجاح الطلب</title>
+</head>
+<body>
+    <h1>شكراً لطلبك!</h1>
+    <p>تم استلام طلبك بنجاح. إليك تفاصيل الطلب:</p>
+    <p>طلب رقم: {{ order.id }}</p>
+    <p>تاريخ الطلب: {{ order.date }}</p>
+    <p>المجموع: {{ order.total_amount }} د.إ</p>
+    <p>الحالة: {{ order.get_status_display }}</p>
+    <a href="{% url 'category_list' %}">عودة إلى الصفحة الرئيسية</a>
+</body>
+</html>

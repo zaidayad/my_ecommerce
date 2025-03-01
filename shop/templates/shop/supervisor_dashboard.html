@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المشرف</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .stat-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 30%;
+        }
+
+        .stat-box h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .order-list, .notification-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-list h3, .notification-list h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        .order-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        select, input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #218838;
+        }
+
+        .notification-item.unread {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .notification-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>لوحة تحكم المشرف</h1>
+
+    <div class="dashboard-container">
+        <!-- قسم الإحصائيات -->
+        <div class="stats-container">
+            <div class="stat-box">
+                <h2>{{ new_orders_count }}</h2>
+                <p>الطلبات الجديدة</p>
+            </div>
+            <div class="stat-box">
+                <h2>{{ completed_orders_count }}</h2>
+                <p>الطلبات المكتملة</p>
+            </div>
+            <div class="stat-box">
+                <h2><span class="price">{{ total_sales}} د.إ</h2>
+                <p>إجمالي المبيعات</p>
+            </div>
+        </div>
+        <!-- روابط إدارة المنتجات -->
+        <div class="manage-products">
+            <h3>إدارة المنتجات</h3>
+            <a href="{% url 'product_management' %}" class="button">عرض المنتجات</a>
+            <a href="{% url 'add_product' %}" class="button">إضافة منتج جديد</a>
+            <a href="{% url 'manage_inventory' %}" class="button">اداره مخزون</a>
+            <a href="{% url 'add_delivery_person' %}" class="button">إضافة موصل طلبات</a>
+            <a href="{% url 'supervisor_delivery_persons' %}" class="button">معلومات موصلي طلبات  </a>
+
+        </div>
+        {% load tz %} <!-- إضافة هذا السطر لتحميل الفلاتر المتعلقة بالوقت -->
+
+        <!-- فلتر البحث -->
+        <div class="order-filters">
+            <form method="get">
+                <!-- فلتر التاريخ -->
+                <label for="start_date">من تاريخ:</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date|default:today }}">
+        
+                <label for="end_date">إلى تاريخ:</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+        
+                <!-- فلتر الحالة -->
+                <label for="status_filter">الحالة:</label>
+                <select name="status_filter" id="status_filter">
+                    <option value="">الكل</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>قيد المعالجة</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>مكتمل</option>
+                    <option value="shipping" {% if status_filter == 'shipping' %}selected{% endif %}>قيد الشحن</option>
+                </select>
+        
+                <button type="submit" class="button">تصفية</button>
+            </form>
+        </div>
+
+        <!-- عرض رسالة "لا توجد مواد" إذا كانت القائمة فارغة -->
+        <div class="order-list">
+            <h3>قائمة الطلبات</h3>
+            {% if orders %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>تاريخ الطلب</th>
+                            <th>الزوار</th>
+                            <th>الحالة</th>
+                            <th>إجراءات</th>
+                            <th>المنتجات</th>
+                            
+                            
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ order.id }}</td>
+                                <td>{{ order.date }}</td>
+                                <td>{{ order.customer.username }}</td>
+                                <td>{{ order.get_status_display }}</td>
+                                
+
+                                <td>
+                                    {% if order.status != 'completed' %}
+                                    <form method="POST" action="{% url 'complete_order' order.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit">إتمام الطلب</button>
+                                    </form>
+                                    {% else %}
+                                        <span>مكتمل</span>
+                                    {% endif %}
+                                    <td>
+                                        <ul>
+                                            {% for item in order.items.all %}
+                                                <li>{{ item.product.name }} (الكمية: {{ item.quantity }})</li>
+                                            {% empty %}
+                                                <li>لا توجد منتجات للعرض.</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            {% else %}
+                <p>لا توجد مواد تطابق الفلاتر المحددة.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+{% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+{% endfor %}
+<script>
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " دينار عراقي";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let priceElements = document.querySelectorAll(".price");
+        priceElements.forEach(element => {
+            let value = parseFloat(element.innerText);
+            element.innerText = formatNumber(value);
+        });
+    });
+</script>

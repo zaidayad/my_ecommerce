@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            line-height: 1.5;
+        }
+        .price {
+            font-size: 1.5em;
+            color: #007BFF;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        .price:hover {
+            color: #0056b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        .review {
+            margin-top: 20px;
+        }
+        form {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .product-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .rating-stars {
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ product.name }}</h1>
+    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-primary">إضافة إلى المفضلة</a>
+
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+    <p>{{ product.description }}</p>
+    <p class="price">السعر: {{ product.price|floatformat:2 }} د.إ</p>
+
+    <h2>التقييمات</h2>
+    {% for review in reviews %}
+    <p>المستخدم: {{ review.user.username }}</p>
+    <p>التقييم: 
+        {% for i in review.star_range %}
+            ⭐
+        {% endfor %}
+    </p>
+    <p>التعليق: {{ review.comment }}</p>
+{% endfor %}
+
+    <h2 class="review">إضافة تقييم</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit">إرسال</button>
+    </form>
+</body>
+</html>

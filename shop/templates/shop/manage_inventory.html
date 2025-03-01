@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المخزون</title>
+    <style>
+        /* إضافة التنسيقات حسب الحاجة */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>إدارة المخزون</h1>
+
+    <!-- عرض رسائل النجاح أو الخطأ -->
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'manage_inventory' %}">
+        {% csrf_token %}
+        <label for="product">اختر المنتج:</label>
+        <select name="product" id="product" required>
+            {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }} (الفئة: {{ product.category.name }})</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="quantity">الكمية:</label>
+        <input type="number" name="quantity" id="quantity" required min="1">
+        <br>
+        <button type="submit" class="button">تحديث المخزون</button>
+    </form>
+
+    <h2>قائمة المنتجات</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>اسم المنتج</th>
+                <th>الفئة</th>
+                <th>السعر</th>
+                <th>الكمية المتاحة</th>
+                <th>الخصم</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category.name }}</td>
+                    <td><span class="price">{{ product.price }} د.إ</td>
+                    <td>{{ product.stock }}</td>
+                    <td>{{ product.discount_percentage }}%</td>
+                    <td>
+                        <!-- روابط لتحديث المخزون -->
+                        <a href="{% url 'edit_product' product.id %}">تعديل</a> |
+                        <a href="{% url 'delete_product' product.id %}" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟');">حذف</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
+<script>
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " دينار عراقي";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let priceElements = document.querySelectorAll(".price");
+        priceElements.forEach(element => {
+            let value = parseFloat(element.innerText);
+            element.innerText = formatNumber(value);
+        });
+    });
+</script>

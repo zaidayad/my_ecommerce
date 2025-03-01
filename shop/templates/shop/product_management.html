@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنتجات</title>
+    <style>
+        /* إضافة بعض التنسيق لواجهة المستخدم */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 15px;
+        }
+
+        .button:hover {
+            background-color: #218838;
+        }
+
+        .button-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 15px;
+        }
+
+        .button-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>إدارة المنتجات</h1>
+    <a href="{% url 'add_product' %}" class="button">إضافة منتج جديد</a>  <!-- رابط لإضافة منتج جديد -->
+
+    <table>
+        <thead>
+            <tr>
+                <th>اسم المنتج</th>
+                <th>السعر</th>
+                <th>العدد في المخزون</th>
+                <th>الفئة</th>
+                <th>التعديلات</th>
+                <th>إدارة المخزون</th>  <!-- إضافة عمود لإدارة المخزون -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.price }} د.إ</td>
+                    <td>{{ product.stock }}</td>
+                    <td>{{ product.category.name }}</td>
+
+                    <td>
+                        <!-- رابط لتعديل المنتج -->
+                        <a href="{% url 'edit_product' product.id %}">تعديل</a> | 
+                        <!-- رابط لحذف المنتج -->
+                        <a href="{% url 'delete_product' product.id %}" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟');">حذف</a>
+                    </td>
+                    
+                    <td>
+                        <!-- رابط لتقليل المخزون -->
+                        <a href="{% url 'reduce_stock' product.id %}" class="button-danger" onclick="return confirm('هل أنت متأكد من تقليل المخزون؟');">تقليل المخزون</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6">لا توجد منتجات حالياً.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

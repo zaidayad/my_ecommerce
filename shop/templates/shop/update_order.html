@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تحديث حالة الطلب</title>
+</head>
+<body>
+    <h1>تحديث حالة الطلب</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="status">اختر الحالة الجديدة:</label>
+        <select name="status" id="status">
+            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>قيد المعالجة</option>
+            <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>تم الشحن</option>
+            <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>مكتمل</option>
+            <option value="canceled" {% if order.status == 'canceled' %}selected{% endif %}>ملغى</option>
+        </select>
+        <button type="submit">تحديث الحالة</button>
+    </form>
+    <a href="{% url 'supervisor_dashboard' %}">عودة إلى لوحة المشرف</a>
+</body>
+</html>

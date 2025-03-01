@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عربة التسوق</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .links a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 10px 5px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .links a:hover {
+            background-color: #218838;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 style="text-align: center;">🛒 عربة التسوق</h2>
+
+    <ul>
+        {% for item in cart_items %}
+            <li>
+                <span>{{ item.product.name }}</span>
+                <span>
+                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" style="width: 50px;">
+                    × <span class="price">{{ item.product.discounted_price|floatformat:2 }}</span> د.إ
+                    = <span class="price">{{ item.total_price|floatformat:2 }}</span> د.إ
+                </span>
+                <a href="{% url 'remove_from_cart' item.id %}" style="color: red;">❌ حذف</a>
+            </li>
+        {% empty %}
+            <li style="text-align: center; color: #888;">لا توجد عناصر في عربة التسوق.</li>
+        {% endfor %}
+    </ul>
+
+    <p class="total">المجموع: <span class="price">{{ total|floatformat:2 }}</span> د.إ</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="address">📍 عنوان المنزل:</label>
+        <input type="text" name="address" required>
+
+        <label for="phone_number">📞 رقم الهاتف:</label>
+        <input type="text" name="phone_number" required>
+
+        <button type="submit">✅ أكمل الدفع</button>
+    </form>
+
+    <div class="links">
+        <a href="{% url 'category_list' %}">🏠 عودة إلى الصفحة الرئيسية</a>
+        <a href="{% url 'order_history' %}">📜 عرض تاريخ الطلبات</a>
+    </div>
+
+    <script>
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " دينار عراقي";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let priceElements = document.querySelectorAll(".price");
+            priceElements.forEach(element => {
+                let value = element.innerText.replace(/[^\d.]/g, ''); // إزالة أي نص غير رقمي
+                value = parseFloat(value); // تحويل النص إلى رقم
+                if (!isNaN(value)) {
+                    element.innerText = formatNumber(value);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!-- shop/templates/shop/delivery_person_login.html -->
+<h2>تسجيل دخول الموصل</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="username">اسم المستخدم</label>
+    <input type="text" name="username" id="username" required>
+
+    <label for="password">كلمة المرور</label>
+    <input type="password" name="password" id="password" required>
+
+    <button type="submit">دخول</button>
+
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
+</form>

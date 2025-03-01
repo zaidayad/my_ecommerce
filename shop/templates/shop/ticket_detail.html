@@ -1,0 +1,11 @@
+<h1>تفاصيل التذكرة: {{ ticket.subject }}</h1>
+<p><strong>الوصف:</strong> {{ ticket.description }}</p>
+<p><strong>الحالة:</strong> {{ ticket.get_status_display }}</p>
+<p><strong>الأولوية:</strong> {{ ticket.priority }}</p>
+<p><strong>وقت الإنشاء:</strong> {{ ticket.created_at }}</p>
+<p><strong>آخر تحديث:</strong> {{ ticket.updated_at }}</p>
+<p><strong>وقت الاستجابة:</strong> {% if ticket.response_time %} {{ ticket.response_time }} {% else %} لا يوجد وقت استجابة بعد {% endif %}</p>
+<p><strong>المسؤول:</strong> {% if ticket.assigned_to %} {{ ticket.assigned_to }} {% else %} لم يتم تعيين المسؤول بعد {% endif %}</p>
+<p><strong>الملاحظات:</strong> {% if ticket.notes %} {{ ticket.notes }} {% else %} لا توجد ملاحظات إضافية {% endif %}</p>
+
+<a href="{% url 'ticket_list' %}">الرجوع إلى قائمة التذاكر</a>
