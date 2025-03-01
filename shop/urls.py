@@ -7,8 +7,8 @@ from .views import (cart_view, login_view, product_list, register,
 
 urlpatterns = [
     path("register/", register, name="register"),
-    path("a", login_view, name="login"),
-    path("", index_view, name="index"),
+    path("", login_view, name="login"),
+    path("a", index_view, name="index"),
     path("categories/", category_list, name="category_list"),
     path("categories/<int:category_id>/", product_list, name="product_list"),
     path("add_to_cart/<int:product_id>/", add_to_cart, name="add_to_cart"),
