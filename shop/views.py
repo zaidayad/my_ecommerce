@@ -812,3 +812,5 @@ def remove_from_wishlist(request, product_id):
     wishlist_item.delete()
     messages.success(request, "تمت إزالة المنتج من المفضلة!")
     return redirect("wishlist_view")
+def index_view(request):
+    return render(request, "shop/index.html")
